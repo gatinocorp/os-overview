@@ -1,67 +1,22 @@
-# services:
-#   app:
-#     build:
-#       context: .
-#       dockerfile: containerfile
-#     container_name: os-overview-app
-#     # A linha chave que resolve a permissão no nível do SELinux
-#     security_opt:
-#       - label=type:container_runtime_t
-#     volumes:
-#       - ..:/app:Z
-#       - /tmp/.X11-unix:/tmp/.X11-unix
-#       - ${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}:ro
-#     environment:
-#       - DISPLAY=${DISPLAY}
-#       - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
-#       - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
-#       - GDK_BACKEND=wayland,x11
-#     restart: unless-stopped
-
-
-# services:
-#   app:
-#     build:
-#       context: .
-#       dockerfile: containerfile
-#     container_name: os-overview-app
-#     security_opt:
-#       - label=type:container_runtime_t
-#     volumes:
-#       - ..:/app:Z
-#       - /tmp/.X11-unix:/tmp/.X11-unix
-#       - /run/user/1000:/run/user/1000:ro
-#     environment:
-#       - DISPLAY=${DISPLAY}
-#       - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
-#       - XDG_RUNTIME_DIR=/run/user/1000
-#       - GDK_BACKEND=wayland,x11
-#     restart: unless-stopped
-#     command: sleep infinity
-
 services:
   app:
     build:
       context: .
       dockerfile: containerfile
     container_name: os-overview-app
-    security_opt:
-      - label=type:container_runtime_t
+    # Comente ou remova essa linha para evitar conflito de SELinux:
+    # security_opt:
+    #   - label=type:container_runtime_t
     network_mode: host
     volumes:
-      - ..:/app:Z                                                  # Application source code
-      - /tmp/.X11-unix:/tmp/.X11-unix                              # X11 socket
-      - /run/user/1000/wayland-0:/run/user/1000/wayland-0:Z        # Wayland socket
-      - /run/user/1000/bus:/run/user/1000/bus:ro,Z                 # D-Bus socket
-      # - ${HOME}/.Xauthority:/root/.Xauthority:Z                    # Xauthority file
-      - ${XAUTHORITY}:/root/.Xauthority:Z                          # Xauthority file for authentication
+      - ..:/app:Z
+      - /run/user/1000:/run/user/1000:Z
+      - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
-      - DISPLAY=${DISPLAY}                                         # X11 display
-      - WAYLAND_DISPLAY=wayland-0                                  # Wayland display
-      - XDG_RUNTIME_DIR=/run/user/1000                             # Runtime directory for user
-      - GDK_BACKEND=wayland,x11                                    # GTK backend preference
-      - XAUTHORITY=/root/.Xauthority                               # Xauthority file for authentication
-      - DCONF_USER_CONFIG_DIR=/root/.config/dconf                  # Dconf user config directory
-      - XAUTHORITY=/root/.Xauthority                               # Xauthority file for authentication
-    restart: unless-stopped
+      - HOME=/home/vscode
+      - DISPLAY=${DISPLAY}
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      - XDG_RUNTIME_DIR=/run/user/1000
+      - GDK_BACKEND=wayland,x11
+    # restart: unless-stopped
     command: sleep infinity
